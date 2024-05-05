@@ -1,4 +1,4 @@
-package com.demo;
+package com.demo.service;
 
 import com.demo.vo.SignedMessage;
 import com.demo.vo.UnsignedMessage;
@@ -27,13 +27,13 @@ public class SignService {
     // Just wait random time simulating the operation takes some time to complete
     Thread.sleep(new SecureRandom().nextInt(1_500, 3_000));
 
-    // ⚠️ Warning! Never use this in production. Use a library and use a proper and modern hashing algorithm
+    // ⚠️ Warning! Never use this in production. Use a library and use a proper and modern hashing
+    // algorithm
     String signature = DigestUtils.md5DigestAsHex(messageToSign.text().getBytes());
 
-    LOG.debug("Message signed. [messageId={}, text={}]", messageToSign.messageId(), messageToSign.text());
+    LOG.debug(
+        "Message signed. [messageId={}, text={}]", messageToSign.messageId(), messageToSign.text());
 
     kafkaTemplate.send("messages.signed", new SignedMessage(messageToSign.messageId(), signature));
   }
-
 }
-

@@ -14,21 +14,16 @@ public class TestDemoApplication {
   @Bean
   @ServiceConnection
   PostgreSQLContainer<?> postgresContainer() {
-    return new PostgreSQLContainer<>(
-        DockerImageName.parse("postgres:16.1")
-    );
+    return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.1"));
   }
 
   @Bean
   @ServiceConnection
   KafkaContainer kafkaContainer() {
-    return new KafkaContainer(
-        DockerImageName.parse("confluentinc/cp-kafka:7.5.3")
-    );
+    return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.3"));
   }
 
   public static void main(String[] args) {
     SpringApplication.from(DemoApplication::main).with(TestDemoApplication.class).run(args);
   }
-
 }

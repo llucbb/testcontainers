@@ -1,4 +1,4 @@
-package com.demo;
+package com.demo.service;
 
 import com.demo.repository.MessageEntity;
 import com.demo.repository.MessageRepository;
@@ -22,17 +22,23 @@ public class MessageService {
 
   private final KafkaTemplate<String, UnsignedMessage> kafkaTemplate;
 
-  public MessageService(MessageRepository messageRepository, KafkaTemplate<String, UnsignedMessage> kafkaTemplate) {
+  public MessageService(
+      MessageRepository messageRepository, KafkaTemplate<String, UnsignedMessage> kafkaTemplate) {
     this.messageRepository = messageRepository;
     this.kafkaTemplate = kafkaTemplate;
   }
 
   public UUID save(String text) {
-    MessageEntity messageEntity = messageRepository.save(new MessageEntity(UUID.randomUUID(), text));
+    MessageEntity messageEntity =
+        messageRepository.save(new MessageEntity(UUID.randomUUID(), text));
 
-    LOG.debug("Requesting to sign a message. [messageId={}, text={}]", messageEntity.getId(), messageEntity.getText());
+    LOG.debug(
+        "Requesting to sign a message. [messageId={}, text={}]",
+        messageEntity.getId(),
+        messageEntity.getText());
 
-    kafkaTemplate.send("messages.unsigned", new UnsignedMessage(messageEntity.getId(), messageEntity.getText()));
+    kafkaTemplate.send(
+        "messages.unsigned", new UnsignedMessage(messageEntity.getId(), messageEntity.getText()));
 
     return messageEntity.getId();
   }
@@ -41,12 +47,11 @@ public class MessageService {
   public void handleMessage(@Payload SignedMessage signedMessage) {
     messageRepository
         .findById(signedMessage.messageId())
-        .ifPresent(messageEntity -> {
-          messageEntity.setSignature(signedMessage.signature());
-          messageEntity.setSignedAt(Instant.now());
-          messageRepository.save(messageEntity);
-        });
+        .ifPresent(
+            messageEntity -> {
+              messageEntity.setSignature(signedMessage.signature());
+              messageEntity.setSignedAt(Instant.now());
+              messageRepository.save(messageEntity);
+            });
   }
-
 }
-

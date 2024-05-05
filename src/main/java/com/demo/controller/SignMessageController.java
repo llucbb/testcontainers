@@ -1,8 +1,8 @@
 package com.demo.controller;
 
-import com.demo.MessageService;
 import com.demo.repository.MessageEntity;
 import com.demo.repository.MessageRepository;
+import com.demo.service.MessageService;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpHeaders;
@@ -31,14 +31,11 @@ class SignMessageController {
   public ResponseEntity<Void> signMessage(@RequestBody PlainMessage plainMessage) {
     UUID messageId = messageService.save(plainMessage.text());
 
-    return ResponseEntity
-        .accepted()
-        .header(HttpHeaders.LOCATION, "/messages/" + messageId)
-        .build();
+    return ResponseEntity.accepted().header(HttpHeaders.LOCATION, "/messages/" + messageId).build();
   }
 
   @GetMapping("/{messageId}")
-  public ResponseEntity<SignedMessageDTO> findSignedMessage(@PathVariable UUID messageId) {
+  public ResponseEntity<SignedMessage> findSignedMessage(@PathVariable UUID messageId) {
     return messageRepository
         .findById(messageId)
         .map(message -> ResponseEntity.ok(toDto(message)))
@@ -46,16 +43,12 @@ class SignMessageController {
   }
 
   @GetMapping
-  public List<SignedMessageDTO> findAll() {
-    return messageRepository
-        .findAll()
-        .stream()
-        .map(this::toDto)
-        .toList();
+  public List<SignedMessage> findAll() {
+    return messageRepository.findAll().stream().map(this::toDto).toList();
   }
 
-  private SignedMessageDTO toDto(MessageEntity message) {
-    return new SignedMessageDTO(message.getId(), message.getText(), message.getSignature(), message.getSignedAt());
+  private SignedMessage toDto(MessageEntity message) {
+    return new SignedMessage(
+        message.getId(), message.getText(), message.getSignature(), message.getSignedAt());
   }
-
 }

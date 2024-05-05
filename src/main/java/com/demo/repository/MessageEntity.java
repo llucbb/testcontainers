@@ -11,21 +11,17 @@ import org.springframework.lang.Nullable;
 @Table(name = "message")
 public class MessageEntity {
 
-  @Id
-  private UUID id;
+  @Id private UUID id;
 
   private String text;
 
   private Instant createdAt = Instant.now();
 
-  @Nullable
-  private String signature;
+  @Nullable private String signature;
 
-  @Nullable
-  private Instant signedAt;
+  @Nullable private Instant signedAt;
 
-  public MessageEntity() {
-  }
+  public MessageEntity() {}
 
   public MessageEntity(UUID id, String text) {
     this.id = id;
